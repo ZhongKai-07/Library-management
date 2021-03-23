@@ -99,6 +99,11 @@ Book creat_book()
 	getchar();
 	scanf("%d", &copiesn);
 	//printf("\n");
+	if(atoi(authorsn) != 0)
+	{
+		printf("\nPlease enter a valid author name\n");
+		creat_book();
+	}
 	if(atoi(yearn) == 0)
 	{
 		printf("\nPlease enter a valid year\n");
@@ -185,8 +190,9 @@ void searchbook()
 	printf("Option: ");
 	scanf("%d", &option);
 	scanf("%[^\n]%*c");
+	
 	char * stitle = (char *)malloc((sizeof(char)*99)); 
-
+	
 	int syear;
 	switch(option)
 	{
@@ -214,8 +220,12 @@ void searchbook()
 			printf("Please enter the author: ");
 			getchar();
 			scanf("%[^\n]%*c", sauthor);
-			//getchar();
-			//printf("%s", sauthor);
+			if(atoi(sauthor) != 0)
+			{
+				printf("\nPlease enter a valid author name\n");
+				searchbook();
+			}
+
 			findauthor = find_book_by_author(sauthor);
 			find_book_by_author(sauthor);
 			Out(findauthor.array);
@@ -225,7 +235,13 @@ void searchbook()
 		case 3:
 			//printf("Please enter the year\n");
 			printf("Please enter the year: ");
+			getchar();
 			scanf("%d", &syear);
+			if(atoi(syear) == 0)
+			{
+				printf("\nPlease enter a valid year\n");
+				searchbook();
+			}
 			findyear = find_book_by_year(syear);
 			Out(findyear.array);
 			break;

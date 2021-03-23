@@ -265,7 +265,7 @@ void returnlink(Register * n, int i, Book * b)
 	{
 		//printf("prepare delete");
 		p = pr->next;
-		printf("%d", p->id);
+		//printf("%d", p->id);
 		if(p->id == i)
 		{
 							
