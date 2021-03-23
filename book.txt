@@ -1,0 +1,15 @@
+ID	title	authors	year	copies
+1	The Forgotten Room	Karen White,Beatriz Williams,Lauren Willing	2016	2
+2	Harry Potter and the Chamber of Secrets	J.K.Rolling	1998	12
+3	Holidays on Ice	David Sedaris	1998	9
+4	java programming	asdf	1990	8
+5	c programming	herbert schedlt	1998	2
+6	python	abc	1990	2
+7	Algorithms	asdff	1990	2
+8	jack	zk	2020	4
+9	jack	zzk	2020	3
+10	zzzk	jack	2023	4
+11	jack	zk	2020	4
+12	harry	jk	2033	3
+13	jack	sss	2021	2
+14	html	zk	1995	8
