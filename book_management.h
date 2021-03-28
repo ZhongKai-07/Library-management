@@ -14,6 +14,7 @@ typedef struct node
 	char  * author;
 	unsigned int year;
 	unsigned int copies;
+	int isborrow; 
 	struct node * next;
 }Book;
 

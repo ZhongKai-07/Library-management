@@ -32,6 +32,7 @@ int load_books(FILE * file)
 		p->title = (char *)malloc(sizeof(char)*100);
 		p->author = (char *)malloc(sizeof(char)*100);
 		fscanf(file, "%d\t%[^\t]%*c\t%[^\t]%*c\t%d\t%d\n",   &p->id , p->title, p->author, &p->year, &p->copies);
+		p->isborrow = 0;
 		last->next = p;
 		last = p;
 	}
@@ -160,16 +161,28 @@ int remove_book()
 	Book *pr = H, *p;  //p是链表头指针 
 	int length = 1;
 	int idnum;
-	printf("\nPlease enter the id:");
+	printf("\nPlease enter the id you want to remove:");
 	scanf("%d", &idnum);
 	while(pr->next)
 	{
 		length += 1;
 		p=pr->next;
+		
 		if(p->id == idnum )
 		{
-			pr->next = p->next;
-			free((void*)p);
+			if(p->isborrow == 0)
+			{
+				pr->next = p->next;
+				free((void*)p);				
+			}
+			else
+			{
+				printf("\nThis book has been borrowed\n");
+				printf("Please try again\n");
+				remove_book();
+				break;
+			}
+
 		}
 		pr=pr->next;
 	}		

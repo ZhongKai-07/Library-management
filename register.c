@@ -193,6 +193,7 @@ int borrowlink(Register * log, int bookid, Book * b) //b指向那本书的位置
 	//printf("add\n");
 	//printf("\n");
 	//printf("%d", b->id);
+	b->isborrow = 1;
 	while(h->next != NULL)
 	{
 		h=h->next;
@@ -261,6 +262,7 @@ void returnlink(Register * n, int i, Book * b)
 	Book *p; 
 	Book *pr = n->hasborrow; //指向头结点 
 	//Out(pr);
+	b->isborrow = 0;
 	while(pr->next != NULL)
 	{
 		//printf("prepare delete");
@@ -273,10 +275,7 @@ void returnlink(Register * n, int i, Book * b)
 			free((void *)p);
 			break;
 		}
-		else
-		{
-			printf("\nNo\n");
-		}
+		
 		pr = pr->next;	
 	} 
 	
@@ -410,13 +409,10 @@ void adduser()
 	
 	while(1)
 	{
-		//number += 1;
-		//printf("----\n");
 		if(p->next == NULL)
 		{
 			CreateRegister(s);
 			s->username = name;
-			//printf("username :%s", s->username);
 			s->password = word;
 			s->hasborrow = (Book *)malloc(sizeof(Book));
 			p->next = s;
