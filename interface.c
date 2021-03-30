@@ -23,6 +23,7 @@ void get_only_oneword()
 	while(getchar() != '\n')
 	{
 		continue;
+		//break;
 	}
 }
 
@@ -31,13 +32,21 @@ void main_menu()
 {
 
 	int choice = 5;
-	
+	static int i = 1;
 	do{
+		
 		char * answer = (char*)malloc(sizeof(char)*10);
 		mainMenu();
-		//getchar();
-		scanf("%s", answer);
+		
+		if(i != 1)
+		{
+			getchar();
+		}
+		scanf("%[^\n]", answer);
 		scanf("%[^\n]%*c");
+		i++;
+		//get_only_oneword();
+		//getchar();
 		choice = atoi(answer);
 		free(answer);
 		//scanf("%c", &answer);
@@ -71,6 +80,7 @@ void main_menu()
 		}
 		//fflush();
 		//getchar(); 
+		//get_only_oneword();
 	}while (choice != 5 );
 	//store("book.txt");
 	return;
@@ -83,8 +93,10 @@ void run_interface()
 	//Out(H);
 	
 	load_user("user.txt");
+	load_loan("loan.txt");
 	//output();
 	main_menu();
-	
+	//store_loan("loan.txt");
+	//store_user("user.txt");
 	return;
 }

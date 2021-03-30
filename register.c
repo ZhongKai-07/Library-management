@@ -5,6 +5,78 @@
 #include "book_management.h"
 #include "interface.h"
 
+void load_loan(FILE *file)
+{
+	
+	
+	file = fopen("loan.txt", "r");
+	
+	 //Book头指针
+	Book * thisbook;
+	while(1)
+	{
+		Register * p = L->next;
+		Book * h = H->next;
+		int isF = 0;
+		Book * thisbook;
+		int xid;
+		char * user1 = (char *)malloc(sizeof(char)*99);
+		if(feof(file))
+		{
+			break;
+		}
+		
+		
+		fscanf(file, "%[^\t]%*c\t%d\n", user1, &xid);
+		//printf("\n%s\n", user1);
+		while(h)
+		{
+			
+			if(h->id == xid)
+			{
+			
+				thisbook = h;
+				break;
+			}
+			h=h->next;
+		}
+		while(p)
+		{
+			//char * user1 = (char *)malloc(sizeof(char)*99);
+			if(strcmp(user1,p->username)==0)
+			{
+				Book * find_this = p->hasborrow; //指向找到的用户的hasborrowed，指向头指针 
+				while(1)
+				{
+					
+					if(find_this->next == NULL)
+					{
+						Book * ad = (Book *)malloc(sizeof(Book));
+						//printf("\nthisbook id:%d\n", thisbook->id);
+						ad->id = thisbook->id;
+						ad->title = thisbook->title;
+						ad->author = thisbook->author;
+						ad->year = thisbook->year;
+						ad->copies = thisbook->copies;
+						find_this->next = ad;
+						ad->next = NULL;
+						isF = 1;
+						break;					
+					}
+					
+					find_this = find_this->next;	
+				}
+				if(isF == 1)
+				{
+					break;
+				}
+			}
+			p=p->next;
+			
+		}
+	}
+}
+
 void Login_menu()
 {
 	int i;
@@ -43,7 +115,7 @@ void Login_menu()
 		}
 		if(i== -1)
 		{
-			printf("\nNo such username.");
+			printf("\nNo such username.\n");
 			Login_menu();
 		}
 	}
@@ -124,13 +196,13 @@ void service_menu(char * _username)
 				Out(H);
 				break;
 			case 5:
-				main_menu();
+				//main_menu();
 				break;
 			default:
 				printf("Please try again: \n");
 		}
 	}while(chose != 5);
-
+	store_user("user.txt");
 }
 
 void borrow_log(Register * nowlog)
@@ -193,6 +265,7 @@ int borrowlink(Register * log, int bookid, Book * b) //b指向那本书的位置
 	//printf("add\n");
 	//printf("\n");
 	//printf("%d", b->id);
+	b->isborrow = 1;
 	while(h->next != NULL)
 	{
 		h=h->next;
@@ -223,8 +296,17 @@ int borrowlink(Register * log, int bookid, Book * b) //b指向那本书的位置
 			break;
 		}
 		
-		h=h->next;	
+		h=h->next;
 	}
+	Register *p=L->next;
+	Book *a=p->hasborrow->next;
+	FILE *file = fopen("loan.txt","a+");
+	//fprintf(file, "%s\t%s\n","Username","loan");
+	fprintf(file, "%s\t%d\n", nowlog->username, bookid);
+	
+	fclose(file);
+		
+	//store_user("user.txt");
 	return 0;
 }
 
@@ -233,10 +315,15 @@ int return_log(Register * nowlog)
 	int id;
 	Book * p = H->next;
 	Book * q;
+	if(nowlog->hasborrow->next == NULL)
+	{
+		printf("\nYou have returned all books\n");
+		return;
+	}
 	Out(nowlog->hasborrow);
 	printf("\nEnter the ID of the book you wish to return：");
 	scanf("%d", &id);
-
+	
 	while(p)
 	{
 		if(id == p->id) //找到了那个id的书， p指向这个书 
@@ -254,6 +341,7 @@ int return_log(Register * nowlog)
 	{
 		printf("\nThere is no such book.\n");
 	}
+	//store_user("user.txt");
 }
 
 void returnlink(Register * n, int i, Book * b)
@@ -261,6 +349,7 @@ void returnlink(Register * n, int i, Book * b)
 	Book *p; 
 	Book *pr = n->hasborrow; //指向头结点 
 	//Out(pr);
+	b->isborrow = 0;
 	while(pr->next != NULL)
 	{
 		//printf("prepare delete");
@@ -273,13 +362,38 @@ void returnlink(Register * n, int i, Book * b)
 			free((void *)p);
 			break;
 		}
-		else
-		{
-			printf("\nNo\n");
-		}
+		
 		pr = pr->next;	
 	} 
 	
+	
+	Register * x;
+	Book *a;
+	FILE *file = fopen("loan.txt","w+");
+	//fprintf(file, "%s\t%s\n","Username","loan");
+	for(x=L->next ; x!=NULL ; x=x->next)
+	{
+		for(a=x->hasborrow->next ; a!=NULL ; a=a->next)
+		{
+			
+			printf("id:\n%d\n", a->id);
+			fprintf(file, "%s\t%d\n", x->username, a->id);
+		}
+	}
+	fclose(file);
+//	while(x)
+//	{
+//		Book *a = x->hasborrow->next;
+//		while(a != NULL)
+//		{
+//			printf("id:\n%d\n", a->id);
+//			
+//			fprintf(file,"%s\t%d\n", x->username, a->id);
+//			a=a->next;
+//		}
+//		x=x->next;
+//	}
+	//fprintf(file, "%s\t%d\n", nowlog->username, bookid);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /*
@@ -365,28 +479,68 @@ int store_user(FILE *file)
 	
 	Register *p = L->next;
 	file = fopen("user.txt", "w");
-	fprintf(file, "%s\t%s\n", "Username", "Password");
+	fprintf(file, "%s\t%s\t%s\n", "Username", "Password","loan");
 	while(p)
 	{
 		fprintf(file, "%s\t%s\n", p->username, p->password);
+//		while(p->hasborrow->next != NULL)
+//		{
+//			fprintf(file,"\t%d",p->hasborrow->next->id);
+//		}
+		//fprintf(file, "\n");
 		p=p->next;
 	}
 	fclose(file);	
- } 
-/*
-int store_user(FILE *file)
+} 
+
+/***
+void load_loan(FILE *file)
 {
-	Register * p = L->next;
-	file = fopen("user.txt", "w");
-	fprintf(file, "%s\t%s\n", "Username", "Password");
+	int i;
+	if(file == NULL)
+	{
+		printf("Can't open");
+		exit(EXIT_FAILURE);
+	}
+	Register *p,*last;
+	//CreateRegister(L);
+	//last = L;
+	
+	file = fopen("loan.txt", "r");
+	//fscanf(file , "%*[^\n]");
+	while(1)
+	{
+		if(feof(file))
+		{
+			break;
+		}
+		fscanf(file, "%s\t%d\n", p->username, p->password);
+		
+		
+	}
+	last->next = NULL;
+	fclose(file);	
+}
+
+
+void store_loan(FILE *file)
+{
+	if((file = fopen("loan.txt", "r"))==NULL)
+	{
+		file = fopen("loan.txt", "w");
+		fclose(file);
+	}
+	
+	Register *p = L->next;
+	file=fopen("loan.txt", "w");
 	while(p)
 	{
-		fprintf(file, "%s\t%s\n", p->username, p->password);
+		fprintf(file, "%s\t%d\n",p->username,);
 		p=p->next;
 	}
 	fclose(file);
-}
-*/
+ } 
+***/
 //添加用户 
 void adduser()
 {
@@ -410,15 +564,13 @@ void adduser()
 	
 	while(1)
 	{
-		//number += 1;
-		//printf("----\n");
 		if(p->next == NULL)
 		{
 			CreateRegister(s);
 			s->username = name;
-			//printf("username :%s", s->username);
 			s->password = word;
 			s->hasborrow = (Book *)malloc(sizeof(Book));
+			s->hasborrow->next = NULL;
 			p->next = s;
 			s->next = NULL;
 			break;

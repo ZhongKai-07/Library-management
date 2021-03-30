@@ -32,6 +32,7 @@ int load_books(FILE * file)
 		p->title = (char *)malloc(sizeof(char)*100);
 		p->author = (char *)malloc(sizeof(char)*100);
 		fscanf(file, "%d\t%[^\t]%*c\t%[^\t]%*c\t%d\t%d\n",   &p->id , p->title, p->author, &p->year, &p->copies);
+		p->isborrow = 0;
 		last->next = p;
 		last = p;
 	}
@@ -160,16 +161,28 @@ int remove_book()
 	Book *pr = H, *p;  //p是链表头指针 
 	int length = 1;
 	int idnum;
-	printf("\nPlease enter the id:");
+	printf("\nPlease enter the id you want to remove:");
 	scanf("%d", &idnum);
 	while(pr->next)
 	{
 		length += 1;
 		p=pr->next;
+		
 		if(p->id == idnum )
 		{
-			pr->next = p->next;
-			free((void*)p);
+			if(p->isborrow == 0)
+			{
+				pr->next = p->next;
+				free((void*)p);				
+			}
+			else
+			{
+				printf("\nThis book has been borrowed\n");
+				printf("Please try again\n");
+				remove_book();
+				break;
+			}
+
 		}
 		pr=pr->next;
 	}		
@@ -192,8 +205,8 @@ void searchbook()
 	scanf("%[^\n]%*c");
 	
 	char * stitle = (char *)malloc((sizeof(char)*99)); 
-	
-	int syear;
+	char * syear = (char *)malloc((sizeof(char)*99));
+	//int syear;
 	switch(option)
 	{
 		case 1:
@@ -227,24 +240,47 @@ void searchbook()
 			}
 
 			findauthor = find_book_by_author(sauthor);
-			find_book_by_author(sauthor);
-			Out(findauthor.array);
-			free((void*) sauthor);
-			break;
+			//find_book_by_author(sauthor);
+			if (findauthor.array->next == NULL)
+			{
+				printf("\nThere has no such book\n");
+				break;
+			}
+			else
+			{
+				Out(findauthor.array);
+				break;
+			}
+			//free((void*) sauthor);
 		}
 		case 3:
 			//printf("Please enter the year\n");
 			printf("Please enter the year: ");
 			getchar();
-			scanf("%d", &syear);
+			scanf("%[^\n]%*c", syear);
 			if(atoi(syear) == 0)
 			{
 				printf("\nPlease enter a valid year\n");
 				searchbook();
 			}
-			findyear = find_book_by_year(syear);
-			Out(findyear.array);
-			break;
+			else
+			{
+				int year = atoi(syear);
+				findyear = find_book_by_year(year);
+				if (findyear.array->next == NULL)
+				{
+					printf("\nThere has no such book\n");
+					break;
+				}
+				else
+				{
+					Out(findyear.array);
+					break;
+				}
+				
+			}
+			
+			
 		case 4:
 			printf("back");
 			break;
@@ -422,7 +458,7 @@ void management()
 			default:
 				printf("Please enter a valid option.\n");
 		}
-	}while(isFlag == 1);
+	}while(choose != 5);
 	//Out(H);
 	int ifstore;
 	//store("book.txt");

@@ -30,3 +30,30 @@ void service_menu(char * _username);
 void borrow_log(Register * nowlog);
 int borrowlink(Register * log, int bookid, Book * b);
 
+void load_loan(FILE *file);
+void store_loan(FILE *file);
+
+/***
+	if((file = fopen("user.txt", "r"))==NULL)
+	{
+		file = fopen("user.txt", "w");
+		fclose(file);
+	}
+	
+	Register *p = L->next;
+	file = fopen("user.txt", "w");
+	fprintf(file, "%s\t%s\t%s\n", "Username", "Password","loan");
+	while(p)
+	{
+		fprintf(file, "%s\t%s\n", p->username, p->password);
+//		while(p->hasborrow->next != NULL)
+//		{
+//			fprintf(file,"\t%d",p->hasborrow->next->id);
+//		}
+		//fprintf(file, "\n");
+		p=p->next;
+	}
+	fclose(file);
+
+//////
+***/

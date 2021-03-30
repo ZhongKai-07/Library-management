@@ -1,0 +1,5 @@
+sam	5
+sam	3
+jack	3
+lwl	1
+sam	7
